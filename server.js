@@ -46,7 +46,7 @@ app.post('/api/v1/feedback', (req, res) => {
       req.body.rating
     ]
   ).then(() => res.send('inserted successfully'))
-  .catch(err => console.error(err));
+    .catch(err => console.error(err));
 });
 
 app.delete('/api/v1/feedback/:id', (req, res) => {
