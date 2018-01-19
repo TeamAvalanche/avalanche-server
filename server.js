@@ -29,10 +29,7 @@ app.get('/nwac/:region', (req, res) => {
   console.log('routing an nwac ajax request for ', req.params.region);
   const url = `http://www.nwac.us/api/v2/avalanche-region-forecast/?format=json&zone=${req.params.region}`;
   superagent.get(url)
-    .then(response => {
-      console.log('then response ', response.text);
-      response.send(response.text);
-    })
+    .then(info => res.send(info.text))
     .catch(err => console.log(err));
 });
 
