@@ -4,12 +4,13 @@ const pg = require('pg');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-// const request = require('request');
-// const rp = require('request-promise');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const DATABASE_URL = process.env.DATABASE_URL || 'postgres://postgres:1234@localhost:5432/avalanche';
+
+// const DATABASE_URL = process.env.DATABASE_URL || 'postgres://postgres:1234@localhost:5432/avalanche'; // arthur
+const DATABASE_URL = process.env.DATABASE_URL || 'postgres://amgranad:amber123@localhost:5432/avalanche'; //amber
+
 const client = new pg.Client(DATABASE_URL);
 client.connect();
 
@@ -48,21 +49,27 @@ app.post('/api/v1/feedback', (req, res) => {
   .catch(err => console.error(err));
 });
 
-// var options = {
-//   url: 'http://www.nwac.us/api/v2/avalanche-forecast/?format=json&day1_date=2018-01-16',
-//   json: true
-// };
+app.delete('/api/v1/feedback/:id', (req, res) => {
+  client.query(`
+  DELETE FROM feedback WHERE feedback_id=$1;  
+  `,
+    [req.params.id]
+  ).then(result => res.status(204).send(result))
+    .catch(err => console.error(err));
+});
 
-// rp(options)
-//   .then(function (locations) {
-//     console.log('locations', locations.objects[0].avalanche_region_forecast[0].bottom_line_summary);
-//   })
-//   .catch(function (err) {
-//     console.error('error', err);
-//   });
+app.put('/api/v1/feedback/:name', (req, res) => {
+  client.query(`
+  UPDATE feedback 
+  SET email='${req.body.email}', location='${req.body.location}', comments='${req.body.comments}', rating=${req.body.rating}
+  WHERE name='${req.body.name}';
+  `
+  ).then( () => {
+    res.send('updated successfully');
+  })
+    .catch(err => console.error(err));
+});
 
 app.listen(PORT, () => {
   console.log(`listening on PORT ${PORT}`);
 });
-
-app.get('/test', (req, res) => res.send());
