@@ -10,19 +10,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // const DATABASE_URL = process.env.DATABASE_URL || 'postgres://postgres:1234@localhost:5432/avalanche'; // arthur
-const DATABASE_URL = process.env.DATABASE_URL || 'postgres://amgranad:amber123@localhost:5432/avalanche'; //amber
+// const DATABASE_URL = process.env.DATABASE_URL || 'postgres://amgranad:amber123@localhost:5432/avalanche'; //amber
+const DATABASE_URL = process.env.DATABASE_URL || 'postgres://alicialycan:534@localhost:5432/avalanche'; //alicia
 
 const client = new pg.Client(DATABASE_URL);
 client.connect();
-
 client.on('error', err => {
   console.error(err);
 });
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 app.use(cors());
-
 app.use(express.static('./public'));
 
 app.get('/nwac/:region', (req, res) => {
@@ -32,6 +33,23 @@ app.get('/nwac/:region', (req, res) => {
     .then(info => res.send(info.text))
     .catch(err => console.log(err));
 });
+
+app.get('/api/v1/feedback', (req, res) => {
+  console.log('request = ', req);
+  client.query('SELECT * FROM feedback;')
+    .then(result => {
+      console.log(result);
+      res.send(result.rows);
+    }).catch(err => {
+      console.error(err);
+    });
+});
+
+// app.get('/zones', (req, res) => {
+//   superagent
+//     .get(NWAC_URL + '/zone/?format=json')
+//     .then(data => res.send(JSON.parse(data.text).objects));
+// });
 
 app.get('/api/v1/feedback', (req, res) => {
   console.log('request = ', req);
@@ -71,7 +89,7 @@ app.delete('/api/v1/feedback/:id', (req, res) => {
 
 app.put('/api/v1/feedback/:name', (req, res) => {
   client.query(`
-  UPDATE feedback 
+  UPDATE feedback
   SET email='${req.body.email}', location='${req.body.location}', comments='${req.body.comments}', rating=${req.body.rating}
   WHERE name='${req.body.name}';
   `
