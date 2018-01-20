@@ -4,6 +4,7 @@ const pg = require('pg');
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const superagent = require('superagent');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -21,6 +22,16 @@ client.on('error', err => {
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+
+app.use(express.static('./public'));
+
+app.get('/nwac/:region', (req, res) => {
+  console.log('routing an nwac ajax request for ', req.params.region);
+  const url = `http://www.nwac.us/api/v2/avalanche-region-forecast/?format=json&zone=${req.params.region}`;
+  superagent.get(url)
+    .then(info => res.send(info.text))
+    .catch(err => console.log(err));
+});
 
 app.get('/api/v1/feedback', (req, res) => {
   console.log('request = ', req);
