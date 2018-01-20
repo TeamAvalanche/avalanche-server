@@ -27,8 +27,28 @@ app.use(bodyParser.urlencoded({
 app.use(cors());
 app.use(express.static('./public'));
 
-app.get('/forecasts/:zone', (req, res) => {
-  const url = NWAC_URL + '/avalanche-region-forecast/?format=json&zone=' + req.params.zone;
+// app.get('/forecasts/:zone', (req, res) => {
+//   const url = NWAC_URL + '/avalanche-region-forecast/?format=json&zone=' + req.params.zone;
+// app.use(express.static('./public'));
+
+app.get('/nwac/:region', (req, res) => {
+  console.log('routing an nwac ajax request for ', req.params.region);
+  const url = `http://www.nwac.us/api/v2/avalanche-region-forecast/?format=json&zone=${req.params.region}`;
+  superagent.get(url)
+    .then(info => res.send(info.text))
+    .catch(err => console.log(err));
+});
+
+app.get('/api/v1/feedback', (req, res) => {
+  console.log('request = ', req);
+  client.query('SELECT * FROM feedback;')
+    .then(result => {
+      console.log(result);
+      res.send(result.rows);
+    }).catch(err => {
+      console.error(err);
+    });
+});
 
   superagent
     .get(url)
