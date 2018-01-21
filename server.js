@@ -10,8 +10,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // const DATABASE_URL = process.env.DATABASE_URL || 'postgres://postgres:1234@localhost:5432/avalanche'; // arthur
-// const DATABASE_URL = process.env.DATABASE_URL || 'postgres://amgranad:amber123@localhost:5432/avalanche'; //amber
-const DATABASE_URL = process.env.DATABASE_URL || 'postgres://alicialycan:534@localhost:5432/avalanche'; //alicia
+const DATABASE_URL = process.env.DATABASE_URL || 'postgres://amgranad:amber123@localhost:5432/avalanche'; //amber
+// const DATABASE_URL = process.env.DATABASE_URL || 'postgres://alicialycan:534@localhost:5432/avalanche'; //alicia
 
 const client = new pg.Client(DATABASE_URL);
 client.connect();
@@ -27,39 +27,36 @@ app.use(cors());
 app.use(express.static('./public'));
 
 app.get('/nwac/:region', (req, res) => {
-  console.log('routing an nwac ajax request for ', req.params.region);
   const url = `http://www.nwac.us/api/v2/avalanche-region-forecast/?format=json&zone=${req.params.region}`;
   superagent.get(url)
     .then(info => res.send(info.text))
     .catch(err => console.log(err));
 });
 
+
 app.get('/api/v1/feedback', (req, res) => {
-  console.log('request = ', req);
   client.query('SELECT * FROM feedback;')
     .then(result => {
-      console.log(result);
       res.send(result.rows);
     }).catch(err => {
       console.error(err);
     });
 });
 
-// app.get('/zones', (req, res) => {
-//   superagent
-//     .get(NWAC_URL + '/zone/?format=json')
-//     .then(data => res.send(JSON.parse(data.text).objects));
-// });
+app.get('/api/v1/feedback/:id', (req, res) => {
+  client.query(`
+    SELECT * FROM feedback WHERE feedback_id=$1;
+  `, [req.params.id]
+  ).then(result => res.send(result.rows[0]))
+    .catch(err => console.error(err));
+});
 
-app.get('/api/v1/feedback', (req, res) => {
-  console.log('request = ', req);
-  client.query('SELECT * FROM feedback;')
-    .then(result => {
-      console.log(result);
-      res.send(result.rows);
-    }).catch(err => {
-      console.error(err);
-    });
+app.get('/api/v1/feedbackids', (req, res) => {
+  client.query(`
+    SELECT feedback_id FROM feedback;
+  `
+  ).then(result => res.send(result.rows))
+    .catch(err => console.error(err));
 });
 
 app.post('/api/v1/feedback', (req, res) => {
