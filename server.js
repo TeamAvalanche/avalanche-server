@@ -27,7 +27,6 @@ app.use(cors());
 app.use(express.static('./public'));
 
 app.get('/nwac/:region', (req, res) => {
-  console.log('routing an nwac ajax request for ', req.params.region);
   const url = `http://www.nwac.us/api/v2/avalanche-region-forecast/?format=json&zone=${req.params.region}`;
   superagent.get(url)
     .then(info => res.send(info.text))
@@ -36,10 +35,8 @@ app.get('/nwac/:region', (req, res) => {
 
 
 app.get('/api/v1/feedback', (req, res) => {
-  console.log('request = ', req);
   client.query('SELECT * FROM feedback;')
     .then(result => {
-      console.log(result);
       res.send(result.rows);
     }).catch(err => {
       console.error(err);
@@ -54,11 +51,11 @@ app.get('/api/v1/feedback/:id', (req, res) => {
     .catch(err => console.error(err));
 });
 
-app.get('/api/v1/feedback/ids', (req, res) => {
+app.get('/api/v1/feedbackids', (req, res) => {
   client.query(`
-    SELECT feedback_id FROM feedback WHERE feedback_id=$1;
-  `, [req.params.id]
-  ).then(result => res.send(result.rows[0]))
+    SELECT feedback_id FROM feedback;
+  `
+  ).then(result => res.send(result.rows))
     .catch(err => console.error(err));
 });
 
