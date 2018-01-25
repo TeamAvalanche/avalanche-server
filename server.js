@@ -12,8 +12,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // const DATABASE_URL = process.env.DATABASE_URL || 'postgres://postgres:1234@localhost:5432/avalanche'; // arthur
-//const DATABASE_URL = process.env.DATABASE_URL || 'postgres://amgranad:amber123@localhost:5432/avalanche'; //amber
-const DATABASE_URL = process.env.DATABASE_URL || 'postgres://alicialycan:534@localhost:5432/avalanche'; //alicia
+const DATABASE_URL = process.env.DATABASE_URL || 'postgres://amgranad:amber123@localhost:5432/avalanche'; //amber
+// const DATABASE_URL = process.env.DATABASE_URL || 'postgres://alicialycan:534@localhost:5432/avalanche'; //alicia
 
 const client = new pg.Client(DATABASE_URL);
 client.connect();
