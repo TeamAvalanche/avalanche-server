@@ -12,8 +12,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // const DATABASE_URL = process.env.DATABASE_URL || 'postgres://postgres:1234@localhost:5432/avalanche'; // arthur
-//const DATABASE_URL = process.env.DATABASE_URL || 'postgres://amgranad:amber123@localhost:5432/avalanche'; //amber
-const DATABASE_URL = process.env.DATABASE_URL || 'postgres://alicialycan:534@localhost:5432/avalanche'; //alicia
+const DATABASE_URL = process.env.DATABASE_URL || 'postgres://amgranad:amber123@localhost:5432/avalanche'; //amber
+// const DATABASE_URL = process.env.DATABASE_URL || 'postgres://alicialycan:534@localhost:5432/avalanche'; //alicia
 
 const client = new pg.Client(DATABASE_URL);
 client.connect();
@@ -52,8 +52,10 @@ app.get('/scrape/:region', (req, res) => {
     if (!error) {
       var $ = cheerio.load(html);
       var temp1 = $('.today_nowcard-phrase').html();
+      console.log('temp 1', temp1);
       var temp2 = $('.today_nowcard-temp span').text();
       var temps = [temp1, temp2];
+      console.log('temp 2', temp2);
     }
     res.send(temps);
   });
